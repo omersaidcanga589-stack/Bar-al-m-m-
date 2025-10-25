@@ -1,0 +1,144 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+<meta charset="UTF-8">
+<title>Barışma Mesajı</title>
+<style>
+  body {
+    font-family: Arial, sans-serif;
+    text-align: center;
+    overflow: hidden;
+    margin:0;
+    background-color:white;
+    position: relative;
+    height: 100vh;
+  }
+  #question {
+    font-size: 28px;
+    margin-top: 50px;
+  }
+  button {
+    font-size: 22px;
+    padding: 10px 20px;
+    margin: 20px;
+    cursor: pointer;
+    border: none;
+    border-radius: 5px;
+    transition: all 0.3s;
+  }
+  #yes {
+    background-color: green;
+    color: white;
+  }
+  #no {
+    background-color: red;
+    color: white;
+  }
+  .flower {
+    position: absolute;
+    font-size: 25px;
+    pointer-events: none;
+    animation: floatUp 5s linear infinite;
+  }
+  @keyframes floatUp {
+    0% { transform: translateY(0px); opacity:1; }
+    100% { transform: translateY(-100vh); opacity:0; }
+  }
+  #finalMessage {
+    display: none;
+    font-size: 10px;
+    color: pink;
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    z-index: 10;
+    transition: font-size 2s ease;
+  }
+</style>
+</head>
+<body>
+
+<div id="question">Seni kırdığımı biliyorum, beni affeder misin?</div>
+<button id="yes">EVET</button>
+<button id="no">HAYIR</button>
+
+<div id="finalMessage">Affedeceğini biliyordum 💛</div>
+
+<script>
+let questions = [
+    "Seni kırdığımı biliyorum, beni affeder misin?",
+    "Emin misin? Bir daha düşün, belki kabul edersin.",
+    "Son kararın mı, beni affedecek misin?",
+    "Tamam, son kez soruyorum."
+];
+
+let qIndex = 0;
+let yesSize = 22;
+
+const questionDiv = document.getElementById('question');
+const yesBtn = document.getElementById('yes');
+const noBtn = document.getElementById('no');
+const finalMessage = document.getElementById('finalMessage');
+
+yesBtn.onclick = () => {
+    showFinal();
+};
+
+noBtn.onclick = () => {
+    qIndex++;
+    yesSize += 4;
+    yesBtn.style.fontSize = yesSize + "px";
+    if(qIndex >= questions.length){
+        // Son soru hayır basılırsa, evet tuşu ekranı kaplasın
+        yesBtn.style.position = "fixed";
+        yesBtn.style.top = "0";
+        yesBtn.style.left = "0";
+        yesBtn.style.width = "100%";
+        yesBtn.style.height = "100%";
+        yesBtn.style.fontSize = "100px";
+        noBtn.style.display = "none";
+        questionDiv.style.display = "none";
+        yesBtn.innerText = "EVET";
+        yesBtn.onclick = showFinal;
+    } else {
+        questionDiv.innerText = questions[qIndex];
+    }
+};
+
+// Final mesaj ve papatyalar/güller
+function showFinal(){
+    questionDiv.style.display = "none";
+    yesBtn.style.display = "none";
+    noBtn.style.display = "none";
+    finalMessage.style.display = "block";
+    animateFinalMessage();
+    createFlowers();
+}
+
+function animateFinalMessage(){
+    let size = 10;
+    let interval = setInterval(()=>{
+        size += 2;
+        finalMessage.style.fontSize = size + "px";
+        if(size >= 50) clearInterval(interval);
+    }, 100);
+}
+
+// Papatya/gül emoji oluştur ve animasyon başlat
+function createFlowers(){
+    const emojis = ["🌼","🌸","🌹","💐"];
+    for(let i=0; i<50; i++){
+        let f = document.createElement("div");
+        f.classList.add("flower");
+        f.innerText = emojis[Math.floor(Math.random()*emojis.length)];
+        f.style.top = window.innerHeight + "px";
+        f.style.left = Math.random()*window.innerWidth + "px";
+        f.style.fontSize = (20+Math.random()*20) + "px";
+        f.style.animationDuration = (4+Math.random()*4) + "s";
+        document.body.appendChild(f);
+    }
+}
+</script>
+</body>
+</html>
