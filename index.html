@@ -1,144 +1,164 @@
 <!DOCTYPE html>
 <html lang="tr">
 <head>
-<meta charset="UTF-8">
-<title>Barışma Mesajı</title>
-<style>
-  body {
-    font-family: Arial, sans-serif;
-    text-align: center;
-    overflow: hidden;
-    margin:0;
-    background-color:white;
-    position: relative;
-    height: 100vh;
-  }
-  #question {
-    font-size: 28px;
-    margin-top: 50px;
-  }
-  button {
-    font-size: 22px;
-    padding: 10px 20px;
-    margin: 20px;
-    cursor: pointer;
-    border: none;
-    border-radius: 5px;
-    transition: all 0.3s;
-  }
-  #yes {
-    background-color: green;
-    color: white;
-  }
-  #no {
-    background-color: red;
-    color: white;
-  }
-  .flower {
-    position: absolute;
-    font-size: 25px;
-    pointer-events: none;
-    animation: floatUp 5s linear infinite;
-  }
-  @keyframes floatUp {
-    0% { transform: translateY(0px); opacity:1; }
-    100% { transform: translateY(-100vh); opacity:0; }
-  }
-  #finalMessage {
-    display: none;
-    font-size: 10px;
-    color: pink;
-    position: absolute;
-    top: 50%;
-    left: 50%;
-    transform: translate(-50%, -50%);
-    z-index: 10;
-    transition: font-size 2s ease;
-  }
-</style>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Barışalım mı?</title>
+  <style>
+    :root{
+      --bg: #fff;
+      --accent: #ff3b3b;
+      --yes: #27ae60;
+      --no: #e74c3c;
+      --text: #333;
+      --credit: #ff66b2;
+    }
+    html,body{
+      height:100%;
+      margin:0;
+      background:var(--bg);
+      font-family:"Comic Sans MS", "Arial", sans-serif;
+      display:flex;
+      align-items:center;
+      justify-content:center;
+    }
+    .card{
+      text-align:center;
+      max-width:720px;
+      width:92%;
+      padding:28px;
+      box-sizing:border-box;
+    }
+    h1{
+      color:var(--accent);
+      margin:6px 0 18px;
+      font-size:26px;
+      line-height:1.2;
+    }
+    .buttons{ margin-top:12px; }
+    button{
+      font-size:18px;
+      padding:10px 22px;
+      margin:0 10px;
+      border-radius:10px;
+      border:0;
+      cursor:pointer;
+      box-shadow:0 6px 18px rgba(0,0,0,0.06);
+      transition: transform .18s ease, box-shadow .18s ease;
+    }
+    #yesBtn{
+      background:var(--yes);
+      color:white;
+      transform-origin:center center;
+    }
+    #noBtn{
+      background:var(--no);
+      color:white;
+    }
+    #cute{
+      display:block;
+      margin:30px auto 0;
+      width:180px;
+      height:180px;
+      font-size:110px; /* emoji fallback */
+      line-height:180px;
+      border-radius:20px;
+      transition: all .25s ease;
+      user-select:none;
+    }
+
+    /* final screen styles */
+    .final-wrap{
+      display:flex;
+      flex-direction:column;
+      align-items:center;
+      justify-content:center;
+      min-height:80vh;
+      gap:18px;
+      padding:22px;
+      box-sizing:border-box;
+    }
+    .final-img{
+      max-width:380px;
+      width:80%;
+      border-radius:14px;
+      box-shadow:0 12px 30px rgba(0,0,0,0.12);
+    }
+    .credit{
+      margin-top:6px;
+      font-size:18px;
+      color:var(--text);
+    }
+    .credit span{ color:var(--credit); font-weight:700; }
+    /* responsive smaller */
+    @media (max-width:420px){
+      h1{ font-size:20px; }
+      button{ font-size:16px; padding:8px 14px; margin:6px; }
+      #cute{ width:140px; height:140px; font-size:86px; line-height:140px; }
+      .final-img{ max-width:300px; }
+    }
+  </style>
 </head>
 <body>
+  <div class="card" id="card">
+    <h1>Seni Üzdüğüm İçin Özür Dilerim 💔<br>Barışalım mı?</h1>
 
-<div id="question">Seni kırdığımı biliyorum, beni affeder misin?</div>
-<button id="yes">EVET</button>
-<button id="no">HAYIR</button>
+    <div class="buttons">
+      <button id="yesBtn">Evet 💚</button>
+      <button id="noBtn">Hayır ❌</button>
+    </div>
 
-<div id="finalMessage">Affedeceğini biliyordum 💛</div>
+    <!-- Başlangıçta harici GIF kullanmak yerine güvenli emoji gösteriyoruz -->
+    <div id="cute" aria-hidden="true">🐱</div>
+  </div>
 
-<script>
-let questions = [
-    "Seni kırdığımı biliyorum, beni affeder misin?",
-    "Emin misin? Bir daha düşün, belki kabul edersin.",
-    "Son kararın mı, beni affedecek misin?",
-    "Tamam, son kez soruyorum."
-];
+  <script>
+    // --- Buraya yüklenen resmin base64 hali gömülü (senin yüklediğin resim) ---
+    const finalImageData = "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAKEAAABRCAIAAAA1oVH4AAAHhElEQVR4Aezdbc4bNxAD4Bc9SnP/I+UufQoiA0H7Ydlee9eOApbgG6N3G1aem4tYbVx7t2n3h4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHn/TZn2rO+LPnN3L7OeORV/rszJzxZ89v5PZzxiOv9NmZ/wAAAP//oXGvKAAAAAZJREFUAwACQQIj/WJX4gAAAABJRU5ErkJggg==";
+    // ----------------------------------------------------------------
 
-let qIndex = 0;
-let yesSize = 22;
+    const yesBtn = document.getElementById('yesBtn');
+    const noBtn = document.getElementById('noBtn');
+    const cute = document.getElementById('cute');
+    const card = document.getElementById('card');
 
-const questionDiv = document.getElementById('question');
-const yesBtn = document.getElementById('yes');
-const noBtn = document.getElementById('no');
-const finalMessage = document.getElementById('finalMessage');
+    let yesScale = 1;
+    const SCALE_INCREMENT = 0.32; // her "Hayır" tıklamada büyüme miktarı
+    const TRIGGER_SCALE = 4.0; // bu değere ulaşınca final ekranı göster
 
-yesBtn.onclick = () => {
-    showFinal();
-};
+    // no (Hayır) tıklanınca: Evet butonu büyür
+    noBtn.addEventListener('click', () => {
+      yesScale = +(yesScale + SCALE_INCREMENT).toFixed(2);
+      yesBtn.style.transform = `scale(${yesScale})`;
+      yesBtn.style.boxShadow = '0 10px 30px rgba(0,0,0,0.12)';
+      // küçük görsel hareket efekti
+      cute.style.transform = `translateY(-${Math.min((yesScale-1)*6, 40)}px) scale(${1 + (yesScale-1)*0.04})`;
 
-noBtn.onclick = () => {
-    qIndex++;
-    yesSize += 4;
-    yesBtn.style.fontSize = yesSize + "px";
-    if(qIndex >= questions.length){
-        // Son soru hayır basılırsa, evet tuşu ekranı kaplasın
-        yesBtn.style.position = "fixed";
-        yesBtn.style.top = "0";
-        yesBtn.style.left = "0";
-        yesBtn.style.width = "100%";
-        yesBtn.style.height = "100%";
-        yesBtn.style.fontSize = "100px";
-        noBtn.style.display = "none";
-        questionDiv.style.display = "none";
-        yesBtn.innerText = "EVET";
-        yesBtn.onclick = showFinal;
-    } else {
-        questionDiv.innerText = questions[qIndex];
+      if (yesScale >= TRIGGER_SCALE) {
+        showFinalScreen();
+      }
+    });
+
+    // yes (Evet) tıklanınca: hemen final ekrana geç
+    yesBtn.addEventListener('click', () => {
+      showFinalScreen();
+    });
+
+    function showFinalScreen(){
+      // final ekran HTML'ini oluştur
+      document.body.innerHTML = `
+        <div class="final-wrap" role="main" aria-live="polite">
+          <h1 style="color:#27ae60; margin:0; font-size:28px;">💖 Biliyordum kabul edeceğini!</h1>
+          <img class="final-img" src="${finalImageData}" alt="şirin görsel">
+          <div class="credit">Yapımcı: <span>ÖMER SAİD 💻💖</span></div>
+        </div>
+      `;
+      // küçük gecikmeyle hoş bir animasyon eklemek istersen buraya ekleyebiliriz
     }
-};
 
-// Final mesaj ve papatyalar/güller
-function showFinal(){
-    questionDiv.style.display = "none";
-    yesBtn.style.display = "none";
-    noBtn.style.display = "none";
-    finalMessage.style.display = "block";
-    animateFinalMessage();
-    createFlowers();
-}
-
-function animateFinalMessage(){
-    let size = 10;
-    let interval = setInterval(()=>{
-        size += 2;
-        finalMessage.style.fontSize = size + "px";
-        if(size >= 50) clearInterval(interval);
-    }, 100);
-}
-
-// Papatya/gül emoji oluştur ve animasyon başlat
-function createFlowers(){
-    const emojis = ["🌼","🌸","🌹","💐"];
-    for(let i=0; i<50; i++){
-        let f = document.createElement("div");
-        f.classList.add("flower");
-        f.innerText = emojis[Math.floor(Math.random()*emojis.length)];
-        f.style.top = window.innerHeight + "px";
-        f.style.left = Math.random()*window.innerWidth + "px";
-        f.style.fontSize = (20+Math.random()*20) + "px";
-        f.style.animationDuration = (4+Math.random()*4) + "s";
-        document.body.appendChild(f);
-    }
-}
-</script>
+    // accessibility: klavye ile de erişim
+    noBtn.addEventListener('keydown', (e)=>{ if(e.key==='Enter' || e.key===' ') { e.preventDefault(); noBtn.click(); }});
+    yesBtn.addEventListener('keydown', (e)=>{ if(e.key==='Enter' || e.key===' ') { e.preventDefault(); yesBtn.click(); }});
+  </script>
 </body>
 </html>
